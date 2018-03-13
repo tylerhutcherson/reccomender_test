@@ -16,8 +16,8 @@ else:
   BATCH_SIZE = 10
   
 KEYSPACE = "ea28b544e93cff97e42b770e"
+rec_schema = RECOMMEND_SCHEMA
 if KEYSPACE:
-  rec_schema = RECOMMEND_SCHEMA
   rec_schema["namespace"] = KEYSPACE
 
 ## VOTES TABLE SETUP
@@ -98,16 +98,12 @@ for device, user_row in user_ind.iterrows():
                             'pred_rating': float(pred),
                             'pred_time': timestamp})
     if batch_count % int(BATCH_SIZE) == 0:
-      if KEYSPACE:
-        RECOMMEND_SCHEMA["namespace"] = KEYSPACE
-      write_data(recommendations, RECOMMEND_SCHEMA, ska)
+      write_data(recommendations, rec_schema, ska)
       # Clear the recommendation set
       recommendations.clear()
   # clean up anything remaining in a partial batch
   if recommendations:
     log.info('...writing out a final partial batch')
-    if KEYSPACE:
-      RECOMMEND_SCHEMA["namespace"] = KEYSPACE
-    write_data(recommendations, RECOMMEND_SCHEMA, ska)
+    write_data(recommendations, rec_schema, ska)
 
 log.info('Done.')
