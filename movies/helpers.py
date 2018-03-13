@@ -19,7 +19,6 @@ def make_indicies(col_type, unique_list):
 
 def write_data(data, schema, skafos):
   """Write data out to the data engine."""
-  # Save out using the data engine
   log.info('Saving {} records with the data engine'.format(len(data)))
   res = skafos.engine.save(schema, data).result()
   log.debug(res)
