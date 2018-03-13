@@ -6,7 +6,7 @@ from movies.helpers import *
 from movies.logger import get_logger
 from skafossdk import *
 
-## Setup the logger and initialize Skafos...
+## Setup the logger and initialize Skafos......
 log = get_logger('recommender')
 ska = Skafos()
 
