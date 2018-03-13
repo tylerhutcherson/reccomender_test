@@ -15,7 +15,7 @@ if 'BATCH_SIZE' in os.environ:
 else:
   BATCH_SIZE = 10
   
-KEYSPACE = None
+KEYSPACE = "ea28b544e93cff97e42b770e"
 
 ## VOTES TABLE SETUP
 # In order to get recommendations from the model, a votes table must be created with a schema defined in constants.py
