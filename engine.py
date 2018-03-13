@@ -16,13 +16,16 @@ else:
   BATCH_SIZE = 10
   
 KEYSPACE = "ea28b544e93cff97e42b770e"
+if KEYSPACE:
+  rec_schema = RECOMMEND_SCHEMA
+  rec_schema["namespace"] = KEYSPACE
 
 ## VOTES TABLE SETUP
 # In order to get recommendations from the model, a votes table must be created with a schema defined in constants.py
 # Unless that table exists, we will build an initial votes table with fake movie data..
 # If a "votes" table exists already, the user can comment the next two lines out and set the variable KEYSPACE above
-log.info("Generating fake votes data")
-make_fake_votes(num_movies=12, num_users=3, skafos=ska)
+#log.info("Generating fake votes data")
+#make_fake_votes(num_movies=12, num_users=3, skafos=ska)
 
 # Tweak the functions in movies/helpers.py and the schema in movies/constants.py if you have data that are not movies
 # This same model could be used for any type of product recommendation given user_ids, item_ids, and ratings (binary OR score)
@@ -95,12 +98,16 @@ for device, user_row in user_ind.iterrows():
                             'pred_rating': float(pred),
                             'pred_time': timestamp})
     if batch_count % int(BATCH_SIZE) == 0:
+      if KEYSPACE:
+        RECOMMEND_SCHEMA["namespace"] = KEYSPACE
       write_data(recommendations, RECOMMEND_SCHEMA, ska)
       # Clear the recommendation set
       recommendations.clear()
   # clean up anything remaining in a partial batch
   if recommendations:
     log.info('...writing out a final partial batch')
+    if KEYSPACE:
+      RECOMMEND_SCHEMA["namespace"] = KEYSPACE
     write_data(recommendations, RECOMMEND_SCHEMA, ska)
 
 log.info('Done.')
