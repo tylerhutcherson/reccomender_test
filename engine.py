@@ -10,12 +10,19 @@ from skafossdk import *
 log = get_logger('recommender')
 ska = Skafos()
 
+## Extract Batch Size and Keyspace from the environment
 if 'BATCH_SIZE' in os.environ:
   BATCH_SIZE = os.environ['BATCH_SIZE']
 else:
   BATCH_SIZE = 10
-  
-KEYSPACE = "ea28b544e93cff97e42b770e"
+
+## Set optional keypace (make sure data sharing rights have been activated if between two different organizations
+if 'KEYSPACE' in os.environ:
+  KEYSPACE = os.environ['KEYSPACE']
+else:
+  KEYSPACE = None
+
+## Set the recommendation schema
 rec_schema = RECOMMEND_SCHEMA
 if KEYSPACE:
   rec_schema["namespace"] = KEYSPACE
@@ -23,13 +30,9 @@ if KEYSPACE:
 ## VOTES TABLE SETUP
 # In order to get recommendations from the model, a votes table must be created with a schema defined in constants.py
 # Unless that table exists, we will build an initial votes table with fake movie data..
-# If a "votes" table exists already, the user can comment the next two lines out and set the variable KEYSPACE above
-#log.info("Generating fake votes data")
-#make_fake_votes(num_movies=12, num_users=3, skafos=ska)
-
-# Tweak the functions in movies/helpers.py and the schema in movies/constants.py if you have data that are not movies
-# This same model could be used for any type of product recommendation given user_ids, item_ids, and ratings (binary OR score)
-
+if not KEYSPACE:
+  log.info("Generating fake votes data")
+  make_fake_votes(num_movies=12, num_users=3, skafos=ska)
 
 ## Use Skafos Data Engine to get votes
 log.info('Setting up view and querying movie list')
